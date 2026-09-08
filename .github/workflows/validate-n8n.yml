@@ -39,7 +39,8 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          # n8n 2.37.11 requires Node.js 24 or newer.
+          node-version: "24"
 
       # Import proves n8n 2.37.11 accepts the JSON. It does not execute the
       # graph and does not prove the live Wait resume item shape.
