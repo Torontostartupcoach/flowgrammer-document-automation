@@ -22,7 +22,9 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          # n8n 2.37.11 currently pulls node-gyp 8 through isolated-vm.
+          # Its build script still imports distutils, removed in Python 3.12.
+          python-version: "3.11"
 
       - name: Run n8n Python tests
         working-directory: n8n
