@@ -1,0 +1,26 @@
+{
+  "name": "Flowgrammer n8n Document Processing Starter",
+  "version": "0.1.1",
+  "last_tested": "2026-09-08",
+  "canonical_article": "/insights/n8n-document-processing-workflow",
+  "github_target": "github:flowgrammer-document-automation/n8n",
+  "github_url_status": "not_created",
+  "license": "MIT",
+  "workflows": [
+    "workflows/flowgrammer-document-processing.json",
+    "workflows/flowgrammer-document-processing-error.json"
+  ],
+  "verification": [
+    "tests/validate_workflows.py",
+    "tests/test_wait_resume_contract.py",
+    "tests/test_wait_timeout_path.py",
+    "tests/test_manual_fixture_input.py",
+    "tests/run_offline_harness.py",
+    "tests/test_idempotency.py"
+  ],
+  "live_n8n_import": "untested_release_blocker",
+  "wait_resume_item_shape": "unproven_without_live_import",
+  "ocr_measured": false,
+  "community_templates_included": false,
+  "crypto_require_builtin": false
+}

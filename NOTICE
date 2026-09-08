@@ -1,0 +1,26 @@
+Source provenance
+
+This repository is original Flowgrammer work. The current n8n/ pack was
+created on 2026-09-08 and copied here from the reviewed v0.1.1 correction
+commit fcabebc.
+
+The workflow JSON, Code-node logic, offline engine, and documentation were
+written from scratch. Community n8n template 17806 and other unclear-licence
+template JSON were used only as public architecture descriptions. Their node
+graphs, identifiers, pinData, and code are not included.
+
+The five labelled-text fixtures and expected JSON are reused from the
+published Flowgrammer Invoice Processing Test Pack. They are fictional.
+They do not measure OCR.
+
+Public references used as evidence, not as copied code:
+
+- n8n Extract From File, Webhook, Crypto, Wait, Slack Approvals, Error
+  Trigger, HTTP Request, Data tables, binary data, queue mode, and
+  execution-data docs, accessed 2026-09-08
+- n8n template API record for workflow 17806 (license field null)
+- Flowgrammer Invoice Processing Test Pack and n8n document-processing
+  research pack dated 2026-09-08
+
+This repository exists locally and is still private. Do not treat a GitHub
+or GitHub Pages URL as public until Codex publishes it.

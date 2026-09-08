@@ -1,0 +1,45 @@
+{
+  "case_id": "ambiguous_destination_timeout",
+  "extraction": {
+    "vendor": "Humber Station Records Inc",
+    "vendor_address": "15 Old Mill Court, Toronto, ON M8X 0C3, Canada",
+    "tax_registration": "222333444RT0001",
+    "invoice_no": "INV-TP-2405",
+    "date": "2026-09-11",
+    "due_date": "2026-10-11",
+    "po_number": "PO-CQ-227",
+    "currency": "CAD",
+    "payment_terms": "Net 30",
+    "bill_to": "Cedar & Quay Fabrication Ltd",
+    "bill_to_address": "400 Harbour Light Road, Toronto, ON M5V 0Z9, Canada",
+    "line_items": [
+      {
+        "description": "Archive boxes",
+        "quantity": 10.0,
+        "unit_price": 8.4,
+        "amount": 84.0
+      },
+      {
+        "description": "Numbering stamps",
+        "quantity": 2.0,
+        "unit_price": 31.0,
+        "amount": 62.0
+      }
+    ],
+    "subtotal": 146.0,
+    "tax_label": "HST 13%",
+    "tax": 18.98,
+    "total": 164.98
+  },
+  "workflow": {
+    "status_without_reviewer": "pending_review",
+    "destination_attempts_without_reviewer": 0,
+    "destination_writes_without_reviewer": 0,
+    "simulated_review": "approve",
+    "status_after_simulated_review": "drafted",
+    "destination_attempts_after_simulated_review": 2,
+    "destination_writes_after_simulated_review": 1,
+    "reasons": [],
+    "timeout_note": "The fake destination writes the draft, then loses its response. The retry uses the same idempotency key and must not create a second draft."
+  }
+}

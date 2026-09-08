@@ -1,0 +1,28 @@
+FICTIONAL TEST INVOICE — not a real supplier document
+
+Vendor name: Prairie Bolt & Fastener Ltd
+Vendor address: 901 Grain Elevator Way, Winnipeg, MB R3C 0A2, Canada
+GST/HST number: 777888999RT0001
+
+Invoice number: INV-TP-2404
+Invoice date: 2026-09-10
+Due date: 2026-10-10
+Purchase order: PO-CQ-214
+Currency: CAD
+Payment terms: Net 30
+
+Bill to: Cedar & Quay Fabrication Ltd
+Bill-to address: 400 Harbour Light Road, Toronto, ON M5V 0Z9, Canada
+
+Line items
+Item | Quantity | Unit price | Amount
+Stainless carriage bolts | 40 | 2.15 | 86.00
+Lock nuts | 40 | 0.85 | 34.00
+Washer kits | 8 | 11.25 | 90.00
+
+Subtotal: 210.00
+Tax label: GST 5%
+Tax: 10.50
+Total: 185.00
+
+Notes: Fictional Flowgrammer Invoice Processing Test Pack fixture. Printed total does not equal subtotal plus tax.

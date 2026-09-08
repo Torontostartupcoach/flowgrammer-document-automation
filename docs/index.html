@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flowgrammer Document Automation</title>
+  <meta name="description" content="Repository map for Flowgrammer document-automation starters. The current pack is the n8n Document Processing Starter.">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1b1b18;
+      --muted: #5c5a52;
+      --line: #d8d4c8;
+      --paper: #f6f3eb;
+      --card: #fffdf8;
+    }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 18px/1.5 ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    main {
+      max-width: 40rem;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem;
+    }
+    h1, h2 { line-height: 1.2; }
+    h1 { font-size: 2rem; margin-bottom: 0.4rem; }
+    h2 { font-size: 1.15rem; margin-top: 2rem; }
+    p, li { color: var(--ink); }
+    .lede, .note { color: var(--muted); }
+    a { color: #0b4f6c; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+      margin: 1rem 0;
+    }
+    ul { padding-left: 1.2rem; }
+    code { font-size: 0.92em; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="lede">Flowgrammer · document automation</p>
+    <h1>Prepared starters, not a live import</h1>
+    <p>
+      This site is the short map for the
+      <code>flowgrammer-document-automation</code> repository. The long-form
+      guide stays on Flowgrammer. The working pack stays in
+      <code>n8n/</code> on the default branch.
+    </p>
+
+    <section>
+      <h2>Read the guide first</h2>
+      <p>
+        <a href="https://flowgrammer.ca/insights/n8n-document-processing-workflow">n8n document processing workflow</a>
+        is the canonical article. Use it for intent, limits, and how the
+        reviewer handoff is supposed to work.
+      </p>
+    </section>
+
+    <section>
+      <h2>Current pack</h2>
+      <p>
+        <strong>n8n Document Processing Starter v0.1.1</strong> is the only
+        pack in the tree. Open the <code>n8n/</code> folder on the default
+        branch after this repository is public. That folder has the two
+        prepared workflow JSON files, labelled-text fixtures, and the
+        offline tests.
+      </p>
+      <p class="note">
+        Later invoice, Power Automate, QuickBooks, and app-specific folders
+        are reserved names. They are not published here.
+      </p>
+    </section>
+
+    <section>
+      <h2>What is tested</h2>
+      <ul>
+        <li>Six stdlib Python tests under <code>n8n/tests</code> (workflow shape, Wait contract, timeout path, manual fixture input, five labelled-text fixtures, idempotent retry).</li>
+        <li>On GitHub-hosted runners only: n8n 2.37.11 server-CLI import of both workflow JSON files against a temporary home and database. Both commands must exit zero. Workflows are not published, not activated, and no endpoint is called.</li>
+      </ul>
+      <p class="note">
+        Labelled-text fixtures do not measure OCR. Live Wait resume item
+        shape, Cloud, Slack Approvals, and Extract From File are outside
+        this test surface.
+      </p>
+    </section>
+  </main>
+</body>
+</html>

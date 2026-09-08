@@ -1,0 +1,27 @@
+FICTIONAL TEST INVOICE — not a real supplier document
+
+Vendor name: Ashbridge Print Works
+Vendor address: 77 Eastern Gap Road, Toronto, ON M4L 0B2, Canada
+GST/HST number: 444555666RT0001
+
+Invoice number:
+Invoice date: 2026-09-09
+Due date: 2026-10-09
+Purchase order: PO-CQ-201
+Currency: CAD
+Payment terms: Net 30
+
+Bill to: Cedar & Quay Fabrication Ltd
+Bill-to address: 400 Harbour Light Road, Toronto, ON M5V 0Z9, Canada
+
+Line items
+Item | Quantity | Unit price | Amount
+Procedure binders | 5 | 36.00 | 180.00
+Index tabs | 10 | 4.80 | 48.00
+
+Subtotal: 228.00
+Tax label: HST 13%
+Tax: 29.64
+Total: 257.64
+
+Notes: Fictional Flowgrammer Invoice Processing Test Pack fixture. Invoice number is intentionally blank.

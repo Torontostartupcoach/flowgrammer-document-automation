@@ -1,0 +1,821 @@
+{
+  "name": "Flowgrammer Document Processing Starter",
+  "id": "b817b506-6b07-553c-a938-eb02a10f4f2e",
+  "versionId": "0febcec1-b5ff-5ee2-a088-a07e0e3d7f58",
+  "active": false,
+  "isArchived": false,
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": [],
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "43421a12-c36d-54aa-8ed6-96e973d71c63",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        80,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "053b3a26-de56-54e1-b076-df05cd456097",
+              "name": "raw_text",
+              "value": "FICTIONAL TEST INVOICE \u2014 not a real supplier document\nVendor name: Ridgemont Industrial Supply Co\nInvoice number: INV-TP-2401\nInvoice date: 2026-09-08\nCurrency: CAD\nBill to: Cedar & Quay Fabrication Ltd\nItem | Quantity | Unit price | Amount\nSafety vests | 6 | 28.00 | 168.00\nSubtotal: 168.00\nTax label: HST 13%\nTax: 21.84\nTotal: 189.84\nNotes: Editable Manual Trigger sample. Replace raw_text with another labelled-text fixture.\n",
+              "type": "string"
+            },
+            {
+              "id": "eba0f8d1-ec1a-56cb-a4ef-50bdb1b92e8a",
+              "name": "filename",
+              "value": "manual-fixture.txt",
+              "type": "string"
+            },
+            {
+              "id": "4f2603d7-f5c0-5898-8740-4d7307030050",
+              "name": "mime_type",
+              "value": "text/plain",
+              "type": "string"
+            },
+            {
+              "id": "199c3954-0691-5d65-9aea-3e3e02f39801",
+              "name": "source_system",
+              "value": "labelled_text_json",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false
+      },
+      "id": "22a2e04c-a7e1-5556-bf47-0aa2502af1f2",
+      "name": "Manual Fixture Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fg-document-intake",
+        "options": {}
+      },
+      "id": "ebf70247-16c8-5f16-853c-e69154f4853d",
+      "name": "Webhook Intake",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        80,
+        420
+      ],
+      "webhookId": "aa5ba040-3931-5afb-87fa-8cd26babd887"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst json = item.json || {};\nconst binary = item.binary || {};\nconst hasBinary = Object.keys(binary).length > 0;\nconst rawText = typeof json.raw_text === 'string' ? json.raw_text : (typeof json.text === 'string' ? json.text : '');\nconst sourceSystem = typeof json.source_system === 'string' && json.source_system ? json.source_system : 'labelled_text_json';\nreturn [{\n  json: {\n    document_id: json.document_id || $execution.id,\n    document_type: json.document_type || 'invoice',\n    source_system: sourceSystem,\n    filename: json.filename || 'fixture.txt',\n    mime_type: json.mime_type || 'text/plain',\n    raw_text: rawText,\n    labelled_text_ready: rawText.length > 0,\n    binary_present: hasBinary,\n    intake_note: (hasBinary && !rawText) ? 'Default labelled-text adapter does not read binary or webhook raw-body files. Supply JSON raw_text.' : null,\n    received_at: new Date().toISOString(),\n    review: { status: 'not_required', actor: null, decided_at: null },\n    destination: { status: 'not_attempted', draft_id: null, attempts: 0, writes: 0 },\n    audit_event_ids: ['received']\n  }\n}];\n"
+      },
+      "id": "b18984e6-f4ea-59a3-b9ba-9fada8251d2a",
+      "name": "Normalize Intake",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        360,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rec = $input.first().json;\nconst name = String(rec.filename || '');\nconst ext = name.includes('.') ? '.' + name.split('.').pop().toLowerCase() : '';\nconst size = Buffer.byteLength(String(rec.raw_text || ''), 'utf8');\nconst reasons = [];\nif (!rec.labelled_text_ready) reasons.push('missing_raw_text');\nif (rec.binary_present && !rec.labelled_text_ready) reasons.push('unsupported_type');\nif (rec.mime_type !== 'text/plain') reasons.push('unsupported_type');\nif (ext && ext !== '.txt') reasons.push('unsupported_type');\nif (size > 10 * 1024 * 1024) reasons.push('file_too_large');\nrec.byte_size = size;\nrec.file_ok = reasons.length === 0;\nrec.validation = { ok: reasons.length === 0, exception_codes: reasons, field_errors: [] };\nrec.intake_contract = 'labelled_text_json_only';\nrec.audit_event_ids = (rec.audit_event_ids || []).concat(['validated']);\nreturn [{ json: rec }];\n"
+      },
+      "id": "8db0d7d6-f7e9-5a03-b7a0-bb899f89bb1c",
+      "name": "Validate MIME and Size",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        600,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "2832694a-b5fb-5db1-832f-7a7b3571453f",
+              "leftValue": "={{ $json.file_ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "0a8631bf-4071-506a-a776-2b09f44d74d4",
+      "name": "File Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        840,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rec = $input.first().json;\nrec.status = 'rejected';\nrec.error_message = (rec.validation.exception_codes || []).join(',');\nreturn [{ json: rec }];\n"
+      },
+      "id": "7bc9f8f4-e1b8-5af4-abcc-2156f1d15a12",
+      "name": "Reject Unsupported File",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1080,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "errorType": "errorMessage",
+        "errorMessage": "={{ $json.error_message }}"
+      },
+      "id": "fb2cf5fe-7b9a-5d4a-a00f-dfc4c8382053",
+      "name": "Stop Unsupported File",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "action": "hash",
+        "binaryData": false,
+        "type": "SHA256",
+        "value": "={{ $json.raw_text || '' }}",
+        "dataPropertyName": "source_sha256",
+        "encoding": "hex"
+      },
+      "id": "79c07e10-790c-5f2f-8798-cd20284f5a63",
+      "name": "Hash Source SHA-256",
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rec = $input.first().json;\nconst text = String(rec.raw_text || '');\nconst match = (pattern) => {\n  const found = text.match(pattern);\n  if (!found) return null;\n  const value = found[1].trim();\n  return value || null;\n};\nconst line_items = [];\nconst lines = text.split(/\\r?\\n/);\nlet inItems = false;\nfor (const raw of lines) {\n  const line = raw.trim();\n  if (line.toLowerCase().startsWith('item |')) { inItems = true; continue; }\n  if (inItems) {\n    if (!line || line.toLowerCase().startsWith('subtotal')) { inItems = false; continue; }\n    const parts = line.split('|').map((p) => p.trim());\n    if (parts.length === 4) {\n      line_items.push({\n        description: parts[0],\n        quantity: Number(parts[1]),\n        unit_price: Number(parts[2]),\n        amount: Number(parts[3])\n      });\n    }\n  }\n}\nconst invoiceNo = match(/^Invoice number:[ \\t]*(.*?)\\s*$/m);\nrec.extraction = {\n  vendor: match(/^Vendor name:\\s*(.+)$/m),\n  vendor_address: match(/^Vendor address:\\s*(.+)$/m),\n  tax_registration: match(/^GST\\/HST number:\\s*(.+)$/m),\n  invoice_no: invoiceNo,\n  document_number: invoiceNo,\n  date: match(/^Invoice date:\\s*(\\d{4}-\\d{2}-\\d{2})/m),\n  due_date: match(/^Due date:\\s*(\\d{4}-\\d{2}-\\d{2})/m),\n  po_number: match(/^Purchase order:\\s*(\\S+)/m),\n  currency: match(/^Currency:\\s*([A-Z]{3})/m),\n  payment_terms: match(/^Payment terms:\\s*(.+)$/m),\n  bill_to: match(/^Bill to:\\s*(.+)$/m),\n  bill_to_address: match(/^Bill-to address:\\s*(.+)$/m),\n  line_items,\n  subtotal: match(/^Subtotal:\\s*([\\d.]+)/m) ? Number(match(/^Subtotal:\\s*([\\d.]+)/m)) : null,\n  tax_label: match(/^Tax label:\\s*(.+)$/m),\n  tax: match(/^Tax:\\s*([\\d.]+)/m) ? Number(match(/^Tax:\\s*([\\d.]+)/m)) : null,\n  total: match(/^Total:\\s*([\\d.]+)/m) ? Number(match(/^Total:\\s*([\\d.]+)/m)) : null,\n  raw_text: text,\n  model_confidence: null,\n  adapter: 'labelled_text_fixture'\n};\nreturn [{ json: rec }];\n"
+      },
+      "id": "13f0e24a-899d-5a4a-81c7-8ffd406215d8",
+      "name": "Extract Labelled Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rec = $input.first().json;\nconst staticData = $getWorkflowStaticData('global');\n// Demo only. Official n8n: static data is unavailable in manual testing and only saves when a published workflow is called by a trigger or webhook. It may be unreliable at high frequency. Not a production store.\nstaticData.seen_sha = staticData.seen_sha || {};\nstaticData.seen_business = staticData.seen_business || {};\nconst vendor = (rec.extraction && rec.extraction.vendor) || '';\nconst number = (rec.extraction && rec.extraction.document_number) || '';\nconst business = number ? (vendor.trim().toLowerCase().replace(/\\s+/g, ' ') + '|' + number.trim().toLowerCase()) : '';\nlet matched = null;\nif (staticData.seen_sha[rec.source_sha256]) matched = 'duplicate_source';\nelse if (business && staticData.seen_business[business]) matched = 'duplicate_business_key';\nrec.duplicate = { is_duplicate: Boolean(matched), matched_on: matched };\nif (matched) {\n  rec.status = 'duplicate';\n  rec.validation = rec.validation || { ok: false, exception_codes: [], field_errors: [] };\n  rec.validation.exception_codes = ['duplicate_source_or_invoice_number'];\n  rec.audit_event_ids = (rec.audit_event_ids || []).concat(['duplicate_stopped']);\n} else {\n  staticData.seen_sha[rec.source_sha256] = number || rec.source_sha256;\n  if (business) staticData.seen_business[business] = rec.source_sha256;\n}\nreturn [{ json: rec }];\n"
+      },
+      "id": "d62f4f23-ac7b-54bf-bf55-c46eaf1f13ee",
+      "name": "Check Duplicates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "54c2df7f-b548-5643-b2de-5da62bf8be17",
+              "leftValue": "={{ $json.duplicate.is_duplicate }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "b0a4d02c-aaf0-5470-a1db-3aede0b87219",
+      "name": "Duplicate?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1800,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rec = $input.first().json;\nrec.status = 'duplicate';\nrec.review = { status: 'not_required', actor: null, decided_at: null };\nrec.destination = { status: 'skipped', draft_id: null, attempts: 0, writes: 0 };\nreturn [{ json: rec }];\n"
+      },
+      "id": "a225194c-fbad-5082-b407-b255b3825372",
+      "name": "Stop Duplicate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2040,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rec = $input.first().json;\nconst ex = rec.extraction || {};\nconst reasons = [];\nif (!ex.vendor) reasons.push('missing_required_field');\nif (!ex.document_number) reasons.push('missing_invoice_no');\nif (!ex.date) reasons.push('missing_required_field');\nif (ex.total === null || ex.total === undefined || ex.total === '') reasons.push('missing_required_field');\nif (ex.subtotal != null && ex.tax != null && ex.total != null) {\n  if (Math.abs(Number((Number(ex.subtotal) + Number(ex.tax)).toFixed(2)) - Number(ex.total)) > 0.011) {\n    reasons.push('conflicting_total');\n  }\n}\nrec.validation = {\n  ok: reasons.length === 0,\n  exception_codes: reasons,\n  field_errors: reasons.slice()\n};\nconst number = ex.document_number || 'none';\nrec.idempotency_material = String(rec.source_sha256 || '') + ':' + (rec.document_type || 'invoice') + ':' + number;\nrec.status = 'pending_review';\nrec.review = { status: 'pending', actor: null, decided_at: null };\nrec.audit_event_ids = (rec.audit_event_ids || []).concat(reasons.length ? ['exception_flagged', 'review_requested'] : ['review_requested']);\nreturn [{ json: rec }];\n"
+      },
+      "id": "d5a4a1a3-15f5-5863-b8c5-5bca6f48d2c7",
+      "name": "Validate Schema and Totals",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2040,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "action": "hash",
+        "binaryData": false,
+        "type": "SHA256",
+        "value": "={{ $json.idempotency_material }}",
+        "dataPropertyName": "idempotency_key",
+        "encoding": "hex"
+      },
+      "id": "6e14a80d-1675-50ee-bdbf-c776627dfbd8",
+      "name": "Hash Idempotency Key",
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 1,
+      "position": [
+        2280,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rec = $input.first().json;\nrec.review_handoff = {\n  channel: 'manual_operator',\n  resume_url: $execution.resumeUrl,\n  http_method: 'POST',\n  example_query: 'decision=approve',\n  example_body: { decision: 'approve' },\n  allowed_decisions: ['approve', 'reject'],\n  operator_action: 'Copy resume_url from this item and POST decision=approve or decision=reject through a private channel. This node does not email or Slack the URL. Wait resume ships with no authentication in this JSON. Do not treat that URL as a production approval endpoint. If the 24-hour wait limit resumes with no decision, the record stays pending_review and is not rejected.'\n};\nrec.audit_event_ids = (rec.audit_event_ids || []).concat(['review_handoff_prepared']);\nreturn [{ json: rec }];\n"
+      },
+      "id": "fee3b4d7-467d-5936-b5d9-64cd447240bc",
+      "name": "Prepare Reviewer Handoff",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2520,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "POST",
+        "limitWaitTime": true,
+        "limitType": "afterTimeInterval",
+        "resumeAmount": 24,
+        "resumeUnit": "hours"
+      },
+      "id": "5805601e-8748-527e-9609-995ef8ea2196",
+      "name": "Wait For Manual Reviewer Handoff",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2760,
+        320
+      ],
+      "webhookId": "3b53bb8e-fd28-58d9-8154-595d3d766687"
+    },
+    {
+      "parameters": {
+        "jsCode": "const incoming = $input.first().json || {};\nlet rec;\ntry {\n  rec = $('Prepare Reviewer Handoff').first().json;\n} catch (error) {\n  rec = incoming.document_record || incoming;\n}\nconst query = incoming.query || {};\nconst body = incoming.body && typeof incoming.body === 'object' ? incoming.body : {};\nconst rawDecision = query.decision || body.decision || incoming.decision;\nconst decision = String(rawDecision == null ? '' : rawDecision).toLowerCase().trim();\nlet reviewStatus;\nif (decision === 'approve') reviewStatus = 'approved';\nelse if (decision === 'reject') reviewStatus = 'rejected';\nelse reviewStatus = 'timed_out';\nrec.review = {\n  status: reviewStatus,\n  actor: query.actor || body.actor || (decision === 'approve' || decision === 'reject' ? 'manual-handoff' : 'wait-limit'),\n  decided_at: new Date().toISOString()\n};\nrec.validation = rec.validation || { ok: false, exception_codes: [], field_errors: [] };\nrec.destination = rec.destination || { status: 'not_attempted', draft_id: null, attempts: 0, writes: 0 };\nrec.audit_event_ids = (rec.audit_event_ids || []).concat(['review_decided']);\nrec.approved = reviewStatus === 'approved';\nrec.explicit_reject = reviewStatus === 'rejected';\nif (reviewStatus === 'rejected') {\n  rec.status = 'rejected';\n  rec.validation.exception_codes = (rec.validation.exception_codes || []).concat(['review_rejected']);\n} else if (reviewStatus === 'timed_out') {\n  rec.status = 'pending_review';\n  rec.destination.attempts = 0;\n  rec.destination.status = 'not_attempted';\n  rec.validation.exception_codes = (rec.validation.exception_codes || []).concat(['review_timed_out']);\n}\nrec.wait_resume_shape_unproven_without_live_import = true;\nreturn [{ json: rec }];\n"
+      },
+      "id": "c69a74c3-19f0-5c37-8eeb-0c355aa525e6",
+      "name": "Apply Review Decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3000,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "0132edcf-db15-53d6-bc48-e0e4a423c3ef",
+              "leftValue": "={{ $json.approved }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "40c79a54-6e5d-51d7-b178-1fbe56199cbd",
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3240,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "b9b11784-81b5-5548-a9cc-2b3208e8a699",
+              "leftValue": "={{ $json.explicit_reject }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "58b0a0fe-4d84-5bbc-9f72-c8555d635ee1",
+      "name": "Explicit Reject?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3480,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rec = $input.first().json;\nrec.audit_event_ids = rec.audit_event_ids || [];\nif (!rec.audit_event_ids.includes('result')) rec.audit_event_ids.push('result');\nrec.result = {\n  document_id: rec.document_id,\n  status: rec.status,\n  reasons: (rec.validation && rec.validation.exception_codes) || [],\n  review: rec.review,\n  destination: rec.destination,\n  idempotency_key: rec.idempotency_key,\n  source_sha256: rec.source_sha256\n};\nreturn [{ json: rec }];\n"
+      },
+      "id": "ba23198e-2ad6-51cd-997c-6df5179efbb4",
+      "name": "Record Review Timeout",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3720,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rec = $input.first().json;\nconst staticData = $getWorkflowStaticData('global');\nstaticData.drafts = staticData.drafts || {};\nconst key = rec.idempotency_key;\nconst invoiceNo = rec.extraction && rec.extraction.document_number;\nrec.destination = rec.destination || { status: 'not_attempted', draft_id: null, attempts: 0, writes: 0 };\nrec.destination.attempts = (rec.destination.attempts || 0) + 1;\nrec.destination.idempotency_key = key;\nrec.audit_event_ids = (rec.audit_event_ids || []).concat(['destination_attempt']);\nif (staticData.drafts[key]) {\n  rec.destination.draft_id = staticData.drafts[key];\n  rec.destination.status = 'drafted';\n  rec.status = 'drafted';\n  rec.ambiguous_timeout = false;\n  rec.audit_event_ids.push('destination_drafted');\n  return [{ json: rec }];\n}\nconst draftId = 'draft-' + (Object.keys(staticData.drafts).length + 1);\nstaticData.drafts[key] = draftId;\nrec.destination.writes = (rec.destination.writes || 0) + 1;\nrec.destination.draft_id = draftId;\nif (invoiceNo === 'INV-TP-2405') {\n  rec.ambiguous_timeout = true;\n  rec.destination.status = 'failed_ambiguous';\n  rec.status = 'pending_review';\n  rec.audit_event_ids.push('destination_ambiguous_timeout');\n  return [{ json: rec }];\n}\nrec.ambiguous_timeout = false;\nrec.destination.status = 'drafted';\nrec.status = 'drafted';\nrec.audit_event_ids.push('destination_drafted');\nreturn [{ json: rec }];\n"
+      },
+      "id": "12141eae-0ffe-5acc-b5f8-41aa734b4829",
+      "name": "Attempt Draft Write",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3480,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "179959ce-27cd-58f3-b569-70d69bb35af5",
+              "leftValue": "={{ $json.ambiguous_timeout }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "f73705b1-3a53-571e-ae2c-eabebf884f79",
+      "name": "Ambiguous Timeout?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3720,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rec = $input.first().json;\nconst staticData = $getWorkflowStaticData('global');\nstaticData.drafts = staticData.drafts || {};\nconst key = rec.idempotency_key;\nrec.destination = rec.destination || { status: 'not_attempted', draft_id: null, attempts: 0, writes: 0 };\nrec.destination.attempts = (rec.destination.attempts || 0) + 1;\nrec.destination.idempotency_key = key;\nrec.audit_event_ids = (rec.audit_event_ids || []).concat(['destination_attempt']);\nif (!staticData.drafts[key]) {\n  rec.destination.status = 'failed';\n  rec.status = 'destination_failed';\n  rec.ambiguous_timeout = false;\n  return [{ json: rec }];\n}\nrec.destination.draft_id = staticData.drafts[key];\nrec.destination.status = 'drafted';\nrec.status = 'drafted';\nrec.ambiguous_timeout = false;\nrec.audit_event_ids.push('destination_drafted');\nreturn [{ json: rec }];\n"
+      },
+      "id": "2f67f0e2-508b-5226-9972-9c4997409587",
+      "name": "Retry Draft Write",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3960,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://example.invalid/fake-erp/drafts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Idempotency-Key",
+              "value": "={{ $json.idempotency_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.result || $json }}",
+        "options": {}
+      },
+      "id": "8365b0d3-532d-5837-93a7-a264c0e6d5a3",
+      "name": "Optional Draft HTTP",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3480,
+        520
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const rec = $input.first().json;\nrec.audit_event_ids = rec.audit_event_ids || [];\nif (!rec.audit_event_ids.includes('result')) rec.audit_event_ids.push('result');\nrec.result = {\n  document_id: rec.document_id,\n  status: rec.status,\n  reasons: (rec.validation && rec.validation.exception_codes) || [],\n  review: rec.review,\n  destination: rec.destination,\n  idempotency_key: rec.idempotency_key,\n  source_sha256: rec.source_sha256\n};\nreturn [{ json: rec }];\n"
+      },
+      "id": "647dc35c-94fc-5d55-8bf9-c72120c08718",
+      "name": "Record Rejection",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3720,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rec = $input.first().json;\nrec.audit_event_ids = rec.audit_event_ids || [];\nif (!rec.audit_event_ids.includes('result')) rec.audit_event_ids.push('result');\nrec.result = {\n  document_id: rec.document_id,\n  status: rec.status,\n  reasons: (rec.validation && rec.validation.exception_codes) || [],\n  review: rec.review,\n  destination: rec.destination,\n  idempotency_key: rec.idempotency_key,\n  source_sha256: rec.source_sha256\n};\nreturn [{ json: rec }];\n"
+      },
+      "id": "a6b6688f-9232-5f96-9540-aaa01b865cef",
+      "name": "Append Audit Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4200,
+        240
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Manual Fixture Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Fixture Input": {
+      "main": [
+        [
+          {
+            "node": "Normalize Intake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Intake": {
+      "main": [
+        [
+          {
+            "node": "Normalize Intake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Intake": {
+      "main": [
+        [
+          {
+            "node": "Validate MIME and Size",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate MIME and Size": {
+      "main": [
+        [
+          {
+            "node": "File Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Valid?": {
+      "main": [
+        [
+          {
+            "node": "Hash Source SHA-256",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject Unsupported File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reject Unsupported File": {
+      "main": [
+        [
+          {
+            "node": "Stop Unsupported File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hash Source SHA-256": {
+      "main": [
+        [
+          {
+            "node": "Extract Labelled Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Labelled Text": {
+      "main": [
+        [
+          {
+            "node": "Check Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Duplicate?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Duplicate?": {
+      "main": [
+        [
+          {
+            "node": "Stop Duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate Schema and Totals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stop Duplicate": {
+      "main": [
+        [
+          {
+            "node": "Append Audit Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Schema and Totals": {
+      "main": [
+        [
+          {
+            "node": "Hash Idempotency Key",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hash Idempotency Key": {
+      "main": [
+        [
+          {
+            "node": "Prepare Reviewer Handoff",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Reviewer Handoff": {
+      "main": [
+        [
+          {
+            "node": "Wait For Manual Reviewer Handoff",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait For Manual Reviewer Handoff": {
+      "main": [
+        [
+          {
+            "node": "Apply Review Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Review Decision": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Attempt Draft Write",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Explicit Reject?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Explicit Reject?": {
+      "main": [
+        [
+          {
+            "node": "Record Rejection",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record Review Timeout",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Review Timeout": {
+      "main": [
+        [
+          {
+            "node": "Append Audit Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attempt Draft Write": {
+      "main": [
+        [
+          {
+            "node": "Ambiguous Timeout?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ambiguous Timeout?": {
+      "main": [
+        [
+          {
+            "node": "Retry Draft Write",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append Audit Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retry Draft Write": {
+      "main": [
+        [
+          {
+            "node": "Append Audit Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Rejection": {
+      "main": [
+        [
+          {
+            "node": "Append Audit Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

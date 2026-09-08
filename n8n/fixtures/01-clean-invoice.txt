@@ -1,0 +1,28 @@
+FICTIONAL TEST INVOICE — not a real supplier document
+
+Vendor name: Ridgemont Industrial Supply Co
+Vendor address: 12 Foundry Lane, Hamilton, ON L8L 0A1, Canada
+GST/HST number: 111222333RT0001
+
+Invoice number: INV-TP-2401
+Invoice date: 2026-09-08
+Due date: 2026-10-08
+Purchase order: PO-CQ-188
+Currency: CAD
+Payment terms: Net 30
+
+Bill to: Cedar & Quay Fabrication Ltd
+Bill-to address: 400 Harbour Light Road, Toronto, ON M5V 0Z9, Canada
+
+Line items
+Item | Quantity | Unit price | Amount
+Safety vests | 6 | 28.00 | 168.00
+Shop floor clipboards | 12 | 9.50 | 114.00
+Fastener bins | 8 | 14.75 | 118.00
+
+Subtotal: 400.00
+Tax label: HST 13%
+Tax: 52.00
+Total: 452.00
+
+Notes: Fictional Flowgrammer Invoice Processing Test Pack fixture. No real company, person, or tax account.

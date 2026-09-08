@@ -1,0 +1,20 @@
+pipeline_stage,adapter_or_role,n8n_node_or_pattern,starter_default,official_doc,notes
+intake,manual_fixture,Manual Trigger,yes,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.manualworkflowtrigger/,Starts the fixture path only
+intake,manual_fixture_json,Edit Fields Set,yes,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.set/,Supplies raw_text filename mime_type; pinData empty
+intake,webhook_json,Webhook POST JSON,yes,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/,Path fg-document-intake; Raw body off; accepts {raw_text}
+intake,other_channels,Execute Sub-workflow,documented,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.executeworkflow/,Form Gmail IMAP Drive OneDrive SharePoint Dropbox
+file_validation,labelled_text_only,Code plus If,yes,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/,text/plain and .txt only; PDF and image fail
+duplicate_check,sha256,Crypto hash SHA-256,yes,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.crypto/,Official Crypto node; no require(crypto)
+duplicate_check,seen_store_demo,Workflow static data demo,yes,https://docs.n8n.io/build/code-in-n8n/cookbook/built-in-methods-and-variables-examples/getworkflowstaticdata/,Unavailable in manual tests; not a production store. Prove via offline harness or active webhook / Data Table / Postgres / Redis
+extraction,labelled_text,Code parser,yes,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/,Does not measure OCR; does not read binaries
+extraction,text_pdf,Extract From File,documented,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.extractfromfile/,Not scan OCR; not the default
+field_schema_validation,rules,Code,yes,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/,Tolerance 0.011
+idempotency_key,sha256,Crypto hash SHA-256,yes,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.crypto/,Hashes idempotency_material
+human_review,manual_handoff,Prepare Reviewer Handoff,yes,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/,Outputs $execution.resumeUrl before Wait
+human_review,wait_resume,Wait webhook POST 24h limit,yes,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.wait/,Not a production approval endpoint; empty resume is timed_out
+human_review,slack_approvals,Slack Send and Wait Approval,preferred_prod,https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.slack/approvals/,Needs Credentials
+draft_handoff,fake_erp_attempt,Attempt Draft Write,yes,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/,First destination attempt
+draft_handoff,fake_erp_retry,Retry Draft Write,yes,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/,Same idempotency_key; no second write
+draft_handoff,http_placeholder,HTTP Request disabled,optional,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/,example.invalid placeholder
+audit,events,Code append-only list,yes,https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/,Postgres later
+error,error_workflow,Error Trigger,yes,https://docs.n8n.io/build/flow-logic/handle-errors-gracefully/,No destination write

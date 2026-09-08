@@ -1,0 +1,27 @@
+FICTIONAL TEST INVOICE — not a real supplier document
+
+Vendor name: Humber Station Records Inc
+Vendor address: 15 Old Mill Court, Toronto, ON M8X 0C3, Canada
+GST/HST number: 222333444RT0001
+
+Invoice number: INV-TP-2405
+Invoice date: 2026-09-11
+Due date: 2026-10-11
+Purchase order: PO-CQ-227
+Currency: CAD
+Payment terms: Net 30
+
+Bill to: Cedar & Quay Fabrication Ltd
+Bill-to address: 400 Harbour Light Road, Toronto, ON M5V 0Z9, Canada
+
+Line items
+Item | Quantity | Unit price | Amount
+Archive boxes | 10 | 8.40 | 84.00
+Numbering stamps | 2 | 31.00 | 62.00
+
+Subtotal: 146.00
+Tax label: HST 13%
+Tax: 18.98
+Total: 164.98
+
+Notes: Fictional Flowgrammer Invoice Processing Test Pack fixture. Use this case to prove a destination that writes a draft and then loses its response. A retry with the same idempotency key must not create a second draft.

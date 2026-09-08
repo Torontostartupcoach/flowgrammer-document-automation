@@ -1,0 +1,61 @@
+name: Validate n8n starter
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  N8N_VERSION: "2.37.11"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run n8n Python tests
+        working-directory: n8n
+        run: |
+          python3 tests/validate_workflows.py
+          python3 tests/test_wait_resume_contract.py
+          python3 tests/test_wait_timeout_path.py
+          python3 tests/test_manual_fixture_input.py
+          python3 tests/run_offline_harness.py
+          python3 tests/test_idempotency.py
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Import both workflows with n8n on the runner
+        env:
+          N8N_DIAGNOSTICS_ENABLED: "false"
+          N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+          N8N_PERSONALIZATION_ENABLED: "false"
+          N8N_HIRING_BANNER_ENABLED: "false"
+          N8N_ENCRYPTION_KEY: ci-n8n-import-smoke-not-a-secret
+        run: |
+          set -euo pipefail
+          HOME_DIR="${RUNNER_TEMP}/n8n-home"
+          mkdir -p "${HOME_DIR}/.n8n"
+          export HOME="${HOME_DIR}"
+          export N8N_USER_FOLDER="${HOME_DIR}/.n8n"
+          npm install --prefix "${RUNNER_TEMP}/n8n-pkg" "n8n@${N8N_VERSION}"
+          N8N_BIN="${RUNNER_TEMP}/n8n-pkg/node_modules/.bin/n8n"
+          "${N8N_BIN}" --version
+          "${N8N_BIN}" import:workflow --input=n8n/workflows/flowgrammer-document-processing.json --activeState=false
+          echo "import-main-exit=0"
+          "${N8N_BIN}" import:workflow --input=n8n/workflows/flowgrammer-document-processing-error.json --activeState=false
+          echo "import-error-exit=0"

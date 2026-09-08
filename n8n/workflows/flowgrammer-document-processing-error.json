@@ -1,0 +1,94 @@
+{
+  "name": "Flowgrammer Document Processing Error Workflow",
+  "id": "0e1bd4f7-039d-55d3-a45a-37825c1f6119",
+  "versionId": "022e5026-3be5-57bb-bfcc-a76b4fff7f8b",
+  "active": false,
+  "isArchived": false,
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": [],
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "84fcca58-216f-54dc-a3ff-c90812a862b5",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst execution = item.execution || {};\nreturn [{\n  json: {\n    event: 'error',\n    workflow_name: (item.workflow || {}).name || 'unknown',\n    execution_id: execution.id || null,\n    destination: { status: 'not_attempted', draft_id: null, attempts: 0, writes: 0 },\n    note: 'Error workflow writes no draft. Replace this Set with a Credentials-backed alert after import.'\n  }\n}];\n"
+      },
+      "id": "1542215a-6231-50fe-8258-f17bc8b9c87b",
+      "name": "Build Error Audit",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b3fcf9bd-eb00-573e-b487-668364c0291b",
+              "name": "alert_channel",
+              "value": "REPLACE_AFTER_IMPORT",
+              "type": "string"
+            },
+            {
+              "id": "0a41f7a6-5f61-5c4e-bce1-ee4272205188",
+              "name": "writes_draft",
+              "value": "no",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true
+      },
+      "id": "295c8069-724c-5f52-bcd5-a9e2dfde64f7",
+      "name": "Prepare Alert Payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        760,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Build Error Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Error Audit": {
+      "main": [
+        [
+          {
+            "node": "Prepare Alert Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
