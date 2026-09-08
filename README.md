@@ -43,8 +43,7 @@ caveats. The n8n folder is the pack. This root README is the repository map.
 
 ## Later folders
 
-These names are reserved. They are not in the tree yet. Do not invent live
-assets or URLs for them.
+These are planned categories for later tested assets. They are not in the tree yet.
 
 | Slot | Later use |
 | --- | --- |
