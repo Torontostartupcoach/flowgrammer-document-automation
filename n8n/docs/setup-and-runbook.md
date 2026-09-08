@@ -32,7 +32,7 @@ Wait resume in this JSON has no authentication. Do not treat that URL as a produ
 
 Official docs: waits under 65 seconds stay in-process. This starter uses a 24-hour limit, so assume a durable wait. Partial executions change `$execution.resumeUrl`. The handoff node must run in the same execution as Wait.
 
-The live Wait webhook item shape (`query` / `body` / binary) is unproven without a live import. `Apply Review Decision` reads query and body and keeps the original record from `Prepare Reviewer Handoff`. That merge is specified, not live-tested.
+The live Wait webhook item shape (`query` / `body` / binary) is unproven without a live execution. `Apply Review Decision` reads query and body and keeps the original record from `Prepare Reviewer Handoff`. That merge is specified, not live-tested.
 
 ## Duplicate store
 
@@ -105,4 +105,4 @@ python3 tests/run_offline_harness.py
 python3 tests/test_idempotency.py
 ```
 
-After a future authorized live import, record the n8n version, Cloud or self-host, the five-case outcome, and the Wait resume item shape. Until that record exists, do not claim live behaviour.
+After a future authorized live execution, record the n8n version, Cloud or self-host, the five-case outcome, and the Wait resume item shape. Until that record exists, do not claim live behaviour. A successful CLI import proves only that the pinned n8n version accepts the JSON.

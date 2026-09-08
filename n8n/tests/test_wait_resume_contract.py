@@ -21,7 +21,7 @@ from validate_workflows import (
     validate_wait_parameters,
 )
 
-UNPROVEN = "UNPROVEN: live Wait resume item shape (query/body/binary) cannot be established without a live n8n import"
+UNPROVEN = "UNPROVEN: live Wait resume item shape (query/body/binary) cannot be established without a live n8n execution"
 
 
 def main() -> int:

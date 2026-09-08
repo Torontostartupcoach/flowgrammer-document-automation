@@ -125,7 +125,7 @@ def main() -> int:
             print(f"- {error}")
         return 1
     print("PASS: empty/automatic Wait resume is timed_out, pending_review, zero destination attempts")
-    print("NOTE: live Wait auto-resume item shape remains unproven without a live n8n import.")
+    print("NOTE: live Wait auto-resume item shape remains unproven without a live n8n execution.")
     return 0
 
 

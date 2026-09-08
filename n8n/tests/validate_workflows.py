@@ -422,7 +422,7 @@ def main() -> int:
         f"PASS: {MAIN.name} nodes={len(main_wf['nodes'])} "
         f"{ERROR.name} nodes={len(error_wf['nodes'])} workflows=2"
     )
-    print("NOTE: Wait webhook resume item shape is unproven without a live n8n import.")
+    print("NOTE: Wait webhook resume item shape is unproven without a live n8n execution.")
     return 0
 
 

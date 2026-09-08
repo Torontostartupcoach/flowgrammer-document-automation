@@ -85,7 +85,7 @@ The offline harness proves the duplicate case. Official n8n docs say `$getWorkfl
 - Create a payment, refund, or posted accounting entry
 - Store live credentials, resume URLs, or customer files
 - Measure OCR accuracy
-- Claim a live import, a public unauthenticated production approval flow, or hashing that needs `NODE_FUNCTION_ALLOW_BUILTIN`
+- Claim live execution, a public unauthenticated production approval flow, or hashing that needs `NODE_FUNCTION_ALLOW_BUILTIN`
 
 ## Official operator caveats
 
