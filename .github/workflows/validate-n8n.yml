@@ -39,6 +39,8 @@ jobs:
         with:
           node-version: "22"
 
+      # Import proves n8n 2.37.11 accepts the JSON. It does not execute the
+      # graph and does not prove the live Wait resume item shape.
       - name: Import both workflows with n8n on the runner
         env:
           N8N_DIAGNOSTICS_ENABLED: "false"
@@ -55,7 +57,7 @@ jobs:
           npm install --prefix "${RUNNER_TEMP}/n8n-pkg" "n8n@${N8N_VERSION}"
           N8N_BIN="${RUNNER_TEMP}/n8n-pkg/node_modules/.bin/n8n"
           "${N8N_BIN}" --version
-          "${N8N_BIN}" import:workflow --input=n8n/workflows/flowgrammer-document-processing.json --activeState=false
+          "${N8N_BIN}" import:workflow --input=n8n/workflows/flowgrammer-document-processing.json
           echo "import-main-exit=0"
-          "${N8N_BIN}" import:workflow --input=n8n/workflows/flowgrammer-document-processing-error.json --activeState=false
+          "${N8N_BIN}" import:workflow --input=n8n/workflows/flowgrammer-document-processing-error.json
           echo "import-error-exit=0"

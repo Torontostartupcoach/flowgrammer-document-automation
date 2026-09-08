@@ -1,8 +1,11 @@
 # Flowgrammer Document Automation
 
-Shared starters for Flowgrammer document-automation work. This repository
-is being prepared locally. It is still private. GitHub Pages is not enabled.
-Nothing here is a live import, a live download, or a published site.
+[![Validate n8n starter](https://github.com/Torontostartupcoach/flowgrammer-document-automation/actions/workflows/validate-n8n.yml/badge.svg)](https://github.com/Torontostartupcoach/flowgrammer-document-automation/actions/workflows/validate-n8n.yml)
+
+Shared starters for Flowgrammer document-automation work. The current pack
+is a prepared n8n workflow pair: release-candidate JSON plus offline tests.
+A green CI import means n8n 2.37.11 accepted that JSON. It does not execute
+the graph and does not prove the live Wait resume item shape.
 
 Canonical guide (site route, not a GitHub link):
 https://flowgrammer.ca/insights/n8n-document-processing-workflow
@@ -27,11 +30,14 @@ caveats. The n8n folder is the pack. This root README is the repository map.
   `unsupported_type`. That is not an OCR product.
 - Offline Python tests prove the five labelled-text fixture outcomes. They
   do not prove Cloud, self-host, Slack Approvals, Extract From File, or OCR.
-- Live n8n import is untested on this machine. No n8n package is installed
-  here. CI on GitHub-hosted runners installs n8n 2.37.11 into a temporary
-  home and runs server-CLI import for both workflow JSON files. Until that
-  job is recorded green after a push, do not claim a proven live import.
-- The live Wait resume item shape is unproven without a recorded import.
+- No n8n package is installed in this working tree. GitHub-hosted CI
+  installs n8n 2.37.11 into a temporary home and imports both workflow JSON
+  files with the server CLI. A green import job proves only that n8n 2.37.11
+  accepted the JSON. It does not start the editor, publish or activate a
+  workflow, call any endpoint, or prove the live Wait resume item shape
+  (`query` / `body` / binary).
+- The live Wait resume item shape stays unproven until a reviewer actually
+  resumes Wait on a running n8n instance. JSON import is not that test.
 - Destination writes are mock drafts. This pack does not pay anyone or post
   accounting entries.
 
@@ -72,13 +78,15 @@ n8n import:workflow --input=n8n/workflows/flowgrammer-document-processing-error.
 ```
 
 Those two commands run only on GitHub-hosted runners. They must exit zero.
-They do not publish, activate, or call any endpoint. See
+They prove JSON acceptance only. They do not publish, activate, call any
+endpoint, execute Wait, or prove the live Wait resume item shape. See
 [`.github/workflows/validate-n8n.yml`](.github/workflows/validate-n8n.yml).
 
 ## Pages
 
-A small landing page is in [`docs/`](docs/). Codex must enable GitHub Pages
-before that folder is a public site. See [`docs/ENABLE-PAGES.md`](docs/ENABLE-PAGES.md).
+A small landing page is in [`docs/`](docs/). Publishing it is a GitHub Pages
+settings action, not part of validate CI. See
+[`docs/ENABLE-PAGES.md`](docs/ENABLE-PAGES.md).
 
 ## License
 

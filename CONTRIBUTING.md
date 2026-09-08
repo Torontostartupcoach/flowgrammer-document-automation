@@ -19,7 +19,8 @@ python3 n8n/tests/test_idempotency.py
 Do not add `n8n/tests/build_workflows.py` or
 `n8n/tests/build_release_archive.py` to CI. Do not install n8n, Node, or
 Docker on a contributor laptop to prove import. Import smoke belongs on the
-GitHub-hosted runner.
+GitHub-hosted runner. A green import proves n8n 2.37.11 accepted the JSON.
+It does not prove the live Wait resume item shape.
 
 ## What not to add
 

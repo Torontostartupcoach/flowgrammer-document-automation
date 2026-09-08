@@ -49,8 +49,8 @@
     <p>
       This site is the short map for the
       <code>flowgrammer-document-automation</code> repository. The long-form
-      guide stays on Flowgrammer. The working pack stays in
-      <code>n8n/</code> on the default branch.
+      guide stays on Flowgrammer. The working pack is the
+      <a href="https://github.com/Torontostartupcoach/flowgrammer-document-automation/tree/main/n8n">n8n folder on main</a>.
     </p>
 
     <section>
@@ -66,10 +66,10 @@
       <h2>Current pack</h2>
       <p>
         <strong>n8n Document Processing Starter v0.1.1</strong> is the only
-        pack in the tree. Open the <code>n8n/</code> folder on the default
-        branch after this repository is public. That folder has the two
-        prepared workflow JSON files, labelled-text fixtures, and the
-        offline tests.
+        pack in the tree. Open
+        <a href="https://github.com/Torontostartupcoach/flowgrammer-document-automation/tree/main/n8n">https://github.com/Torontostartupcoach/flowgrammer-document-automation/tree/main/n8n</a>
+        for the two prepared workflow JSON files, labelled-text fixtures,
+        and the offline tests.
       </p>
       <p class="note">
         Later invoice, Power Automate, QuickBooks, and app-specific folders
@@ -81,12 +81,13 @@
       <h2>What is tested</h2>
       <ul>
         <li>Six stdlib Python tests under <code>n8n/tests</code> (workflow shape, Wait contract, timeout path, manual fixture input, five labelled-text fixtures, idempotent retry).</li>
-        <li>On GitHub-hosted runners only: n8n 2.37.11 server-CLI import of both workflow JSON files against a temporary home and database. Both commands must exit zero. Workflows are not published, not activated, and no endpoint is called.</li>
+        <li>On GitHub-hosted runners only: n8n 2.37.11 server-CLI import of both workflow JSON files against a temporary home and database. Both commands must exit zero. That proves n8n 2.37.11 accepted the JSON. It does not execute the graph, publish or activate a workflow, or call an endpoint. It does not prove the live Wait resume item shape.</li>
       </ul>
       <p class="note">
-        Labelled-text fixtures do not measure OCR. Live Wait resume item
-        shape, Cloud, Slack Approvals, and Extract From File are outside
-        this test surface.
+        Labelled-text fixtures do not measure OCR. The live Wait resume item
+        shape (<code>query</code> / <code>body</code> / binary) stays
+        unproven after a green import. Cloud, Slack Approvals, and Extract
+        From File are also outside this test surface.
       </p>
     </section>
   </main>
