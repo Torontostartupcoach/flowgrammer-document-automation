@@ -1,0 +1,50 @@
+{
+  "case_id": "clean",
+  "extraction": {
+    "vendor": "Ridgemont Industrial Supply Co",
+    "vendor_address": "12 Foundry Lane, Hamilton, ON L8L 0A1, Canada",
+    "tax_registration": "111222333RT0001",
+    "invoice_no": "INV-TP-2401",
+    "date": "2026-09-08",
+    "due_date": "2026-10-08",
+    "po_number": "PO-CQ-188",
+    "currency": "CAD",
+    "payment_terms": "Net 30",
+    "bill_to": "Cedar & Quay Fabrication Ltd",
+    "bill_to_address": "400 Harbour Light Road, Toronto, ON M5V 0Z9, Canada",
+    "line_items": [
+      {
+        "description": "Safety vests",
+        "quantity": 6.0,
+        "unit_price": 28.0,
+        "amount": 168.0
+      },
+      {
+        "description": "Shop floor clipboards",
+        "quantity": 12.0,
+        "unit_price": 9.5,
+        "amount": 114.0
+      },
+      {
+        "description": "Fastener bins",
+        "quantity": 8.0,
+        "unit_price": 14.75,
+        "amount": 118.0
+      }
+    ],
+    "subtotal": 400.0,
+    "tax_label": "HST 13%",
+    "tax": 52.0,
+    "total": 452.0
+  },
+  "workflow": {
+    "status_without_reviewer": "pending_review",
+    "destination_attempts_without_reviewer": 0,
+    "destination_writes_without_reviewer": 0,
+    "simulated_review": "approve",
+    "status_after_simulated_review": "drafted",
+    "destination_attempts_after_simulated_review": 1,
+    "destination_writes_after_simulated_review": 1,
+    "reasons": []
+  }
+}

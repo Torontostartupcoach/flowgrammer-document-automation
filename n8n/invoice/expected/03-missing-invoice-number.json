@@ -1,0 +1,44 @@
+{
+  "case_id": "missing_invoice_number",
+  "extraction": {
+    "vendor": "Ashbridge Print Works",
+    "vendor_address": "77 Eastern Gap Road, Toronto, ON M4L 0B2, Canada",
+    "tax_registration": "444555666RT0001",
+    "invoice_no": null,
+    "date": "2026-09-09",
+    "due_date": "2026-10-09",
+    "po_number": "PO-CQ-201",
+    "currency": "CAD",
+    "payment_terms": "Net 30",
+    "bill_to": "Cedar & Quay Fabrication Ltd",
+    "bill_to_address": "400 Harbour Light Road, Toronto, ON M5V 0Z9, Canada",
+    "line_items": [
+      {
+        "description": "Procedure binders",
+        "quantity": 5.0,
+        "unit_price": 36.0,
+        "amount": 180.0
+      },
+      {
+        "description": "Index tabs",
+        "quantity": 10.0,
+        "unit_price": 4.8,
+        "amount": 48.0
+      }
+    ],
+    "subtotal": 228.0,
+    "tax_label": "HST 13%",
+    "tax": 29.64,
+    "total": 257.64
+  },
+  "workflow": {
+    "status_without_reviewer": "pending_review",
+    "destination_attempts_without_reviewer": 0,
+    "destination_writes_without_reviewer": 0,
+    "simulated_review": "reject",
+    "status_after_simulated_review": "rejected",
+    "destination_attempts_after_simulated_review": 0,
+    "destination_writes_after_simulated_review": 0,
+    "reasons": ["missing_invoice_no"]
+  }
+}

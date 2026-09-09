@@ -1,0 +1,6 @@
+{
+  "name": "flowgrammer-n8n-invoice-processing",
+  "version": "0.1.0",
+  "canonical_article": "/insights/n8n-invoice-automation",
+  "github_target": "github:flowgrammer-document-automation/n8n/invoice"
+}

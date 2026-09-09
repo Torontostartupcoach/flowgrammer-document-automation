@@ -1,0 +1,36 @@
+{
+  "notes": "Original fictional Cedar & Quay Fabrication Ltd acceptance suite. No real vendors, people, or documents.",
+  "buyer": "Cedar & Quay Fabrication Ltd",
+  "cases": [
+    {
+      "id": "clean",
+      "file": "01-clean-invoice.txt",
+      "expected_file": "01-clean-invoice.json",
+      "title": "Clean invoice"
+    },
+    {
+      "id": "duplicate",
+      "file": "02-duplicate-invoice.txt",
+      "expected_file": "02-duplicate-invoice.json",
+      "title": "Duplicate of the clean invoice"
+    },
+    {
+      "id": "missing_invoice_number",
+      "file": "03-missing-invoice-number.txt",
+      "expected_file": "03-missing-invoice-number.json",
+      "title": "Missing invoice number"
+    },
+    {
+      "id": "conflicting_total",
+      "file": "04-conflicting-total.txt",
+      "expected_file": "04-conflicting-total.json",
+      "title": "Conflicting printed total"
+    },
+    {
+      "id": "ambiguous_destination_timeout",
+      "file": "05-ambiguous-destination-timeout.txt",
+      "expected_file": "05-ambiguous-destination-timeout.json",
+      "title": "Destination writes then loses its response"
+    }
+  ]
+}
